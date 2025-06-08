@@ -82,12 +82,8 @@ def load_data():
     return jsonify({"done": True, "message": "Object was successfully"}), 200
 
 @app.route('/user', methods=['GET'])
-def handle_hello():
-
-    response_body = {
-        "msg": "Hello, this is your GET /user response "
-    }
-
+def get_users():
+    response_body = User.get_users()
     return jsonify(response_body), 200
 
 # this only runs if `$ python src/app.py` is executed
