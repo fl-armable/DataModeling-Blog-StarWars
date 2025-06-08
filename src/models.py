@@ -4,6 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
 from eralchemy2 import render_er
 from enum import Enum as PyEnum  # <-- Importa Enum de Python
 from sqlalchemy import Enum as SQLEnum  # <-- Importa Enum de SQLAlchemy
+from sqlalchemy.exc import SQLAlchemyError
 
 
 class Base(DeclarativeBase):
@@ -18,23 +19,63 @@ class User(Base):
     __tablename__ = "user"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    firstname: Mapped[str] = mapped_column(String(50), nullable=False)
-    lastname: Mapped[str] = mapped_column(String(50), nullable=False)
-    email: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
+#    firstname: Mapped[str] = mapped_column(String(50), nullable=False)
+#    lastname: Mapped[str] = mapped_column(String(50), nullable=False)
+#    email: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     username: Mapped[str] = mapped_column(
         String(50), unique=True, nullable=False)
-    password: Mapped[str] = mapped_column(String(50), nullable=False)
+#    password: Mapped[str] = mapped_column(String(50), nullable=False)
     member_since: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
 
     def serialize(self):
         return {
             "id": self.id,
-            "firstname": self.firstname,
-            "lastname": self.lastname,
-            "email": self.email,
+#            "firstname": self.firstname,
+#            "lastname": self.lastname,
+#            "email": self.email,
             "username": self.username,
             "member_since": self.member_since.isoformat()
         }
+
+    @staticmethod
+    def add_user(data: dict):
+        try:
+            new_user = User(
+#                firstname=data["firstname"],
+#                lastname=data["lastname"],
+#                email=data["email"],
+                username=data["username"],
+#                password=data["password"],
+                member_since=data["member_since"]
+            )
+            db.session.add(new_user)
+            db.session.commit()
+            return True, new_user.serialize()
+        except (KeyError, SQLAlchemyError):
+            db.session.rollback()
+            return False
+        
+    @staticmethod
+    def get_users():
+        try:
+            users = db.session.query(User).all()
+            return [user.serialize() for user in users]
+        except SQLAlchemyError:
+            db.session.rollback()
+            return []
+
+    @staticmethod
+    def delete_user(id: int):
+        try:
+            user = db.session.get(User, id)
+            if user is None:
+                return False
+            db.session.delete(user)
+            db.session.commit()
+            return True
+        except SQLAlchemyError:
+            db.session.rollback()
+            return False
 
 
 class Favorites(Base):
@@ -43,18 +84,59 @@ class Favorites(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(
         Integer, ForeignKey('user.id'), nullable=False)
-    item_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey('item.id'), nullable=False)
-    favorites_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    item_uid: Mapped[int] = mapped_column(
+        Integer, ForeignKey('item.uid'), nullable=False)
 
     def serialize(self):
         return {
             "id": self.id,
             "user_id": self.user_id,
-            "item_id": self.item_id,
-            "favorites_count": self.favorites_count
+            "item_uid": self.item_uid,
         }
+    
+    @staticmethod
+    def add_favorites(user_id: int, item_uid: int):
+        try:
+            # Contar cuántos favoritos tiene este usuario
+            count = db.session.query(Favorites).filter_by(user_id=user_id).count()
+            if count >= 5:
+                return False, None
+            # Verificar si ya existe este favorito para evitar duplicados
+            exists = db.session.query(Favorites).filter_by(user_id=user_id, item_uid=item_uid).first()
+            if exists:
+                return False, None
+            favorite = Favorites(
+                user_id=user_id,
+                item_uid=item_uid
+            )
+            db.session.add(favorite)
+            db.session.commit()
+            return True, favorite.serialize()
+        except SQLAlchemyError:
+            db.session.rollback()
+            return False, None
+            
+    @staticmethod
+    def get_favorites(user_id: int):
+        try:
+            favorites = db.session.query(Favorites).filter_by(user_id=user_id).all()
+            return [fav.serialize() for fav in favorites]
+        except SQLAlchemyError:
+            db.session.rollback()
+            return []
 
+    @staticmethod
+    def delete_favorites(item_uid: int):
+        try:
+            favorite = db.session.get(Favorites, item_uid)
+            if favorite is None:
+                return False
+            db.session.delete(favorite)
+            db.session.commit()
+            return True
+        except SQLAlchemyError:
+            db.session.rollback()
+            return False
 
 class ItemTypeEnum(PyEnum):  # <-- Usa el Enum de Python
     PEOPLE = "People"
@@ -84,6 +166,35 @@ class Item(Base):
             "uid": self.uid,
             "version": self.version
         }
+    
+    @staticmethod
+    def add_item(data: dict):
+        try:
+            item = Item(
+                type_item=data["type_item"],
+                prop_id=data["prop_id"],
+                description=data["description"],
+                uid=data["uid"],
+                version=data["version"]
+            )
+            db.session.add(item)
+            db.session.commit()
+            return True, item.serialize()
+        except (KeyError, SQLAlchemyError):
+            db.session.rollback()
+            return False, None
+        
+    @staticmethod
+    def get_item(type_item, uid):
+        try:
+            item = db.session.query(Item).filter_by(type_item=type_item, uid=uid).first()
+            if item:
+                return True, item.serialize()
+            else:
+                return False, None
+        except SQLAlchemyError:
+            db.session.rollback()
+            return False, None
 
 # Properties almacena las propiedades de cada elemento, independientemente de su tipo.
 class Properties(Base):
@@ -122,7 +233,43 @@ class Properties(Base):
             "propertie_9": self.propertie_9,
             "url": self.url
         }
+    
+    @staticmethod
+    def add_propertie(data: dict):
+        try:
+            propertie = Properties(
+                propertie_id=data["propertie_id"],
+                created=data["created"],
+                edited=data["edited"],
+                propertie_1=data["propertie_1"],
+                propertie_2=data["propertie_2"],
+                propertie_3=data["propertie_3"],
+                propertie_4=data["propertie_4"],
+                propertie_5=data["propertie_5"],
+                propertie_6=data["propertie_6"],
+                propertie_7=data["propertie_7"],
+                propertie_8=data["propertie_8"],
+                propertie_9=data["propertie_9"],
+                url=data["url"]
+            )
+            db.session.add(propertie)
+            db.session.commit()
+            return True, propertie.serialize()
+        except (KeyError, SQLAlchemyError):
+            db.session.rollback()
+            return False, None
 
+    @staticmethod
+    def get_propertie(propertie_id: str):
+        try:
+            propertie = db.session.query(Properties).filter_by(propertie_id=propertie_id).first()
+            if propertie:
+                return True, propertie.serialize()
+            else:
+                return False, None
+        except SQLAlchemyError:
+            db.session.rollback()
+            return False, None
 
 try:
     render_er(Base, 'diagram.png')

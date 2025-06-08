@@ -1,0 +1,252 @@
+[
+    {
+        "uid": "1",
+        "url": "https://www.swapi.tech/api/planets/1",
+        "favorite": false,
+        "result": {
+            "properties": {
+                "created": "2025-06-08T06:49:05.237Z",
+                "edited": "2025-06-08T06:49:05.237Z",
+                "climate": "arid",
+                "surface_water": "1",
+                "name": "Tatooine",
+                "diameter": "10465",
+                "rotation_period": "23",
+                "terrain": "desert",
+                "gravity": "1 standard",
+                "orbital_period": "304",
+                "population": "200000",
+                "url": "https://www.swapi.tech/api/planets/1"
+            },
+            "_id": "5f7254c11b7dfa00041c6fae",
+            "description": "A planet.",
+            "uid": "1",
+            "__v": 2
+        }
+    },
+    {
+        "uid": "2",
+        "url": "https://www.swapi.tech/api/planets/2",
+        "favorite": false,
+        "result": {
+            "properties": {
+                "created": "2025-06-08T06:49:05.237Z",
+                "edited": "2025-06-08T06:49:05.237Z",
+                "climate": "temperate",
+                "surface_water": "40",
+                "name": "Alderaan",
+                "diameter": "12500",
+                "rotation_period": "24",
+                "terrain": "grasslands, mountains",
+                "gravity": "1 standard",
+                "orbital_period": "364",
+                "population": "2000000000",
+                "url": "https://www.swapi.tech/api/planets/2"
+            },
+            "_id": "5f7254c11b7dfa00041c6faf",
+            "description": "A planet.",
+            "uid": "2",
+            "__v": 2
+        }
+    },
+    {
+        "uid": "3",
+        "url": "https://www.swapi.tech/api/planets/3",
+        "favorite": false,
+        "result": {
+            "properties": {
+                "created": "2025-06-08T06:49:05.237Z",
+                "edited": "2025-06-08T06:49:05.237Z",
+                "climate": "temperate, tropical",
+                "surface_water": "8",
+                "name": "Yavin IV",
+                "diameter": "10200",
+                "rotation_period": "24",
+                "terrain": "jungle, rainforests",
+                "gravity": "1 standard",
+                "orbital_period": "4818",
+                "population": "1000",
+                "url": "https://www.swapi.tech/api/planets/3"
+            },
+            "_id": "5f7254c11b7dfa00041c6fb0",
+            "description": "A planet.",
+            "uid": "3",
+            "__v": 2
+        }
+    },
+    {
+        "uid": "4",
+        "url": "https://www.swapi.tech/api/planets/4",
+        "favorite": false,
+        "result": {
+            "properties": {
+                "created": "2025-06-08T06:49:05.237Z",
+                "edited": "2025-06-08T06:49:05.237Z",
+                "climate": "frozen",
+                "surface_water": "100",
+                "name": "Hoth",
+                "diameter": "7200",
+                "rotation_period": "23",
+                "terrain": "tundra, ice caves, mountain ranges",
+                "gravity": "1.1 standard",
+                "orbital_period": "549",
+                "population": "unknown",
+                "url": "https://www.swapi.tech/api/planets/4"
+            },
+            "_id": "5f7254c11b7dfa00041c6fb1",
+            "description": "A planet.",
+            "uid": "4",
+            "__v": 2
+        }
+    },
+    {
+        "uid": "5",
+        "url": "https://www.swapi.tech/api/planets/5",
+        "favorite": false,
+        "result": {
+            "properties": {
+                "created": "2025-06-08T06:49:05.237Z",
+                "edited": "2025-06-08T06:49:05.237Z",
+                "climate": "murky",
+                "surface_water": "8",
+                "name": "Dagobah",
+                "diameter": "8900",
+                "rotation_period": "23",
+                "terrain": "swamp, jungles",
+                "gravity": "N/A",
+                "orbital_period": "341",
+                "population": "unknown",
+                "url": "https://www.swapi.tech/api/planets/5"
+            },
+            "_id": "5f7254c11b7dfa00041c6fb2",
+            "description": "A planet.",
+            "uid": "5",
+            "__v": 2
+        }
+    },
+    {
+        "uid": "6",
+        "url": "https://www.swapi.tech/api/planets/6",
+        "favorite": false,
+        "result": {
+            "properties": {
+                "created": "2025-06-08T06:49:05.237Z",
+                "edited": "2025-06-08T06:49:05.237Z",
+                "climate": "temperate",
+                "surface_water": "0",
+                "name": "Bespin",
+                "diameter": "118000",
+                "rotation_period": "12",
+                "terrain": "gas giant",
+                "gravity": "1.5 (surface), 1 standard (Cloud City)",
+                "orbital_period": "5110",
+                "population": "6000000",
+                "url": "https://www.swapi.tech/api/planets/6"
+            },
+            "_id": "5f7254c11b7dfa00041c6fb3",
+            "description": "A planet.",
+            "uid": "6",
+            "__v": 2
+        }
+    },
+    {
+        "uid": "7",
+        "url": "https://www.swapi.tech/api/planets/7",
+        "favorite": false,
+        "result": {
+            "properties": {
+                "created": "2025-06-08T06:49:05.237Z",
+                "edited": "2025-06-08T06:49:05.237Z",
+                "climate": "temperate",
+                "surface_water": "8",
+                "name": "Endor",
+                "diameter": "4900",
+                "rotation_period": "18",
+                "terrain": "forests, mountains, lakes",
+                "gravity": "0.85 standard",
+                "orbital_period": "402",
+                "population": "30000000",
+                "url": "https://www.swapi.tech/api/planets/7"
+            },
+            "_id": "5f7254c11b7dfa00041c6fb4",
+            "description": "A planet.",
+            "uid": "7",
+            "__v": 2
+        }
+    },
+    {
+        "uid": "8",
+        "url": "https://www.swapi.tech/api/planets/8",
+        "favorite": false,
+        "result": {
+            "properties": {
+                "created": "2025-06-08T06:49:05.237Z",
+                "edited": "2025-06-08T06:49:05.237Z",
+                "climate": "temperate",
+                "surface_water": "12",
+                "name": "Naboo",
+                "diameter": "12120",
+                "rotation_period": "26",
+                "terrain": "grassy hills, swamps, forests, mountains",
+                "gravity": "1 standard",
+                "orbital_period": "312",
+                "population": "4500000000",
+                "url": "https://www.swapi.tech/api/planets/8"
+            },
+            "_id": "5f7254c11b7dfa00041c6fb5",
+            "description": "A planet.",
+            "uid": "8",
+            "__v": 2
+        }
+    },
+    {
+        "uid": "9",
+        "url": "https://www.swapi.tech/api/planets/9",
+        "favorite": false,
+        "result": {
+            "properties": {
+                "created": "2025-06-08T06:49:05.237Z",
+                "edited": "2025-06-08T06:49:05.237Z",
+                "climate": "temperate",
+                "surface_water": "unknown",
+                "name": "Coruscant",
+                "diameter": "12240",
+                "rotation_period": "24",
+                "terrain": "cityscape, mountains",
+                "gravity": "1 standard",
+                "orbital_period": "368",
+                "population": "1000000000000",
+                "url": "https://www.swapi.tech/api/planets/9"
+            },
+            "_id": "5f7254c11b7dfa00041c6fb6",
+            "description": "A planet.",
+            "uid": "9",
+            "__v": 2
+        }
+    },
+    {
+        "uid": "10",
+        "url": "https://www.swapi.tech/api/planets/10",
+        "favorite": false,
+        "result": {
+            "properties": {
+                "created": "2025-06-08T06:49:05.237Z",
+                "edited": "2025-06-08T06:49:05.237Z",
+                "climate": "temperate",
+                "surface_water": "100",
+                "name": "Kamino",
+                "diameter": "19720",
+                "rotation_period": "27",
+                "terrain": "ocean",
+                "gravity": "1 standard",
+                "orbital_period": "463",
+                "population": "1000000000",
+                "url": "https://www.swapi.tech/api/planets/10"
+            },
+            "_id": "5f7254c11b7dfa00041c6fb7",
+            "description": "A planet.",
+            "uid": "10",
+            "__v": 2
+        }
+    }
+]
