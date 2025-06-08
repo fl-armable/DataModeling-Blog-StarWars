@@ -48,7 +48,7 @@ def load_data():
         if exists:
             continue
         # Cargar el item
-        ok_item, _ = Item.add_item({
+        ok_item, error_item = Item.add_item({
             "type_item": item["type_item"],
             "prop_id": item["prop_id"],
             "description": item.get("description", ""),
@@ -57,7 +57,7 @@ def load_data():
         })
         if not ok_item:
             db.session.rollback()
-            return jsonify({"done": False, "message": f"Error loading item {item.get('prop_id', '')}"}), 400
+            return jsonify({"done": False, "message": f"Error loading item {item.get('prop_id', '')}", "error": error_item}), 400
         # Cargar las properties asociadas
         prop = item.get("properties", {})
         ok_prop, _ = Properties.add_propertie({

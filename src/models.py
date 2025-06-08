@@ -2,8 +2,6 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, Boolean, ForeignKey, Date, Time, DateTime, Integer, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
 from eralchemy2 import render_er
-from enum import Enum as PyEnum  # <-- Importa Enum de Python
-from sqlalchemy import Enum as SQLEnum  # <-- Importa Enum de SQLAlchemy
 from sqlalchemy.exc import SQLAlchemyError
 
 
@@ -84,30 +82,30 @@ class Favorites(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(
         Integer, ForeignKey('user.id'), nullable=False)
-    item_uid: Mapped[int] = mapped_column(
-        Integer, ForeignKey('item.uid'), nullable=False)
+    item_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey('item.id'), nullable=False)
 
     def serialize(self):
         return {
             "id": self.id,
             "user_id": self.user_id,
-            "item_uid": self.item_uid,
+            "item_id": self.item_id,
         }
     
     @staticmethod
-    def add_favorites(user_id: int, item_uid: int):
+    def add_favorites(user_id: int, item_id: int):
         try:
             # Contar cuántos favoritos tiene este usuario
             count = db.session.query(Favorites).filter_by(user_id=user_id).count()
             if count >= 5:
                 return False, None
             # Verificar si ya existe este favorito para evitar duplicados
-            exists = db.session.query(Favorites).filter_by(user_id=user_id, item_uid=item_uid).first()
+            exists = db.session.query(Favorites).filter_by(user_id=user_id, item_id=item_id).first()
             if exists:
                 return False, None
             favorite = Favorites(
                 user_id=user_id,
-                item_uid=item_uid
+                item_id=item_id
             )
             db.session.add(favorite)
             db.session.commit()
@@ -126,9 +124,9 @@ class Favorites(Base):
             return []
 
     @staticmethod
-    def delete_favorites(item_uid: int):
+    def delete_favorites(item_id: int):
         try:
-            favorite = db.session.get(Favorites, item_uid)
+            favorite = db.session.get(Favorites, item_id)
             if favorite is None:
                 return False
             db.session.delete(favorite)
@@ -138,29 +136,22 @@ class Favorites(Base):
             db.session.rollback()
             return False
 
-class ItemTypeEnum(PyEnum):  # <-- Usa el Enum de Python
-    PEOPLE = "People"
-    PLANETS = "Planets"
-
-
 # type_item define el tipo de elemento, que puede ser "People" o "Planets"
 class Item(Base):
     __tablename__ = "item"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    type_item: Mapped[ItemTypeEnum] = mapped_column(
-        SQLEnum(ItemTypeEnum), nullable=False)  # <-- Usa el Enum de SQLAlchemy
+    type_item: Mapped[str] = mapped_column(String(50), nullable=False)
     prop_id: Mapped[str] = mapped_column(
         String(50), unique=True, nullable=False)
     description: Mapped[str] = mapped_column(String(255), nullable=False)
-    uid: Mapped[int] = mapped_column(Integer, unique=True, nullable=False)
-    version: Mapped[int] = mapped_column(
-        "version", Integer, nullable=False)  # __v
+    uid: Mapped[str] = mapped_column(String(50), nullable=False)
+    version: Mapped[int] = mapped_column("version", Integer, nullable=False)
 
     def serialize(self):
         return {
             "id": self.id,
-            "type_item": self.type_item.value,
+            "type_item": self.type_item,
             "prop_id": self.prop_id,
             "description": self.description,
             "uid": self.uid,
@@ -180,9 +171,9 @@ class Item(Base):
             db.session.add(item)
             db.session.commit()
             return True, item.serialize()
-        except (KeyError, SQLAlchemyError):
+        except (KeyError, SQLAlchemyError)as e:
             db.session.rollback()
-            return False, None
+            return False, {"error": str(e)}
         
     @staticmethod
     def get_item(type_item, uid):
