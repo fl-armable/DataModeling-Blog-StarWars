@@ -19,10 +19,10 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 #    firstname: Mapped[str] = mapped_column(String(50), nullable=False)
 #    lastname: Mapped[str] = mapped_column(String(50), nullable=False)
-#    email: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
-    username: Mapped[str] = mapped_column(
-        String(50), unique=True, nullable=False)
-#    password: Mapped[str] = mapped_column(String(50), nullable=False)
+    email: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
+#    username: Mapped[str] = mapped_column(
+#        String(50), unique=True, nullable=False)
+    password: Mapped[str] = mapped_column(String(50), nullable=False)
     member_since: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
 
     def serialize(self):
@@ -30,8 +30,8 @@ class User(Base):
             "id": self.id,
 #            "firstname": self.firstname,
 #            "lastname": self.lastname,
-#            "email": self.email,
-            "username": self.username,
+            "email": self.email,
+#            "username": self.username,
             "member_since": self.member_since.isoformat()
         }
 
@@ -41,17 +41,17 @@ class User(Base):
             new_user = User(
 #                firstname=data["firstname"],
 #                lastname=data["lastname"],
-#                email=data["email"],
-                username=data["username"],
-#                password=data["password"],
+                email=data["email"],
+#                username=data["username"],
+                password=data["password"],
                 member_since=data["member_since"]
             )
             db.session.add(new_user)
             db.session.commit()
             return True, new_user.serialize()
-        except (KeyError, SQLAlchemyError):
+        except (KeyError, SQLAlchemyError)as e:
             db.session.rollback()
-            return False
+            return False, {"error": str(e)}
         
     @staticmethod
     def get_users():

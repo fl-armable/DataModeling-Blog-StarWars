@@ -9,7 +9,7 @@ from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User, Item, Properties
-#from models import Person
+from datetime import datetime, timezone
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -80,6 +80,88 @@ def load_data():
             return jsonify({"done": False, "message": f"Error loading properties for {prop.get('propertie_id', '')}"}), 400
 
     return jsonify({"done": True, "message": "Object was successfully"}), 200
+
+# Mapeos de claves para properties según el tipo de item
+PEOPLE_PROPERTIES = [
+    ("propertie_1", "name"),
+    ("propertie_2", "gender"),
+    ("propertie_3", "skin_color"),
+    ("propertie_4", "hair_color"),
+    ("propertie_5", "height"),
+    ("propertie_6", "eye_color"),
+    ("propertie_7", "mass"),
+    ("propertie_8", "homeworld"),
+    ("propertie_9", "birth_year"),
+]
+
+PLANETS_PROPERTIES = [
+    ("propertie_1", "climate"),
+    ("propertie_2", "surface_water"),
+    ("propertie_3", "name"),
+    ("propertie_4", "diameter"),
+    ("propertie_5", "rotation_period"),
+    ("propertie_6", "terrain"),
+    ("propertie_7", "gravity"),
+    ("propertie_8", "orbital_period"),
+    ("propertie_9", "population"),
+]
+
+@app.route('/items/<type_item>/<uid>', methods=['GET'])
+def get_item_by_type_and_uid(type_item, uid):
+    ok, item = Item.get_item(type_item, uid)
+    if not ok or not item:
+        return jsonify({"done": False, "message": "Item not found"}), 404
+
+    # Buscar las properties asociadas
+    prop_ok, prop = Properties.get_propertie(item["prop_id"])
+    if not prop_ok or not prop:
+        return jsonify({"done": False, "message": "Properties not found"}), 404
+
+    # Seleccionar el mapeo de claves según el tipo
+    if type_item.lower() == "people":
+        prop_map = PEOPLE_PROPERTIES
+    elif type_item.lower() == "planets":
+        prop_map = PLANETS_PROPERTIES
+    else:
+        return jsonify({"done": False, "message": "Invalid type_item"}), 400
+
+    # Construir el dict de properties con los nombres correctos
+    properties = {
+        "created": prop["created"],
+        "edited": prop["edited"],
+        "url": prop["url"]
+    }
+    for db_key, api_key in prop_map:
+        properties[api_key] = prop[db_key]
+
+    result = {
+        "properties": properties,
+        "description": item["description"],
+        "uid": item["uid"],
+        "__v": item["version"]
+    }
+
+    response = {
+        "result": result
+    }
+    return jsonify(response), 200
+
+@app.route('/user', methods=['POST'])
+def add_user():
+    data = request.get_json()
+    if not data or "email" not in data or "password" not in data:
+        return jsonify({"done": False, "message": "Faltan campos requeridos"}), 400
+
+    user_data = {
+        "email": data["email"],
+        "password": data["password"],
+        "member_since": datetime.now(timezone.utc)
+    }
+    ok, result = User.add_user(user_data)
+    if ok:
+        return jsonify({"done": True, "user": result}), 201
+    else:
+        return jsonify({"done": False, "message": "No se pudo crear el usuario", "error": result.get("error", "")}), 400
 
 @app.route('/user', methods=['GET'])
 def get_users():

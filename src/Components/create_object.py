@@ -44,9 +44,9 @@ def adapt_result(obj, type_item):
 # Procesa ambos archivos
 all_items = []
 for obj in planets:
-    all_items.append(adapt_result(obj, "Planets"))
+    all_items.append(adapt_result(obj, "planets"))
 for obj in people:
-    all_items.append(adapt_result(obj, "People"))
+    all_items.append(adapt_result(obj, "people"))
 
 # all_items es la lista de objetos adaptados
 # Si quieres verlo como un solo objeto:
