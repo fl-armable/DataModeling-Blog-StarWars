@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Item, Properties
+from models import db, User, Item, Properties, Favorites
 from datetime import datetime, timezone
 
 app = Flask(__name__)
@@ -167,6 +167,38 @@ def add_user():
 def get_users():
     response_body = User.get_users()
     return jsonify(response_body), 200
+
+@app.route('/favorites/<type_item>/<uid>', methods=['POST'])
+def add_favorite(type_item, uid):
+    data = request.get_json()
+    user_id = data.get('user_id')
+    if not user_id:
+        return jsonify({"error": "user_id es requerido"}), 400
+
+    # Buscar el item correspondiente
+    item = db.session.query(Item).filter_by(type_item=type_item, uid=uid).first()
+    if not item:
+        return jsonify({"error": "Item no encontrado"}), 404
+
+    # Agregar a favoritos
+    success, result = Favorites.add_favorites(user_id=user_id, item_id=item.id)
+    if success:
+        return jsonify(result), 201
+    else:
+        return jsonify({"error": "No se pudo agregar a favoritos"}), 400
+    
+@app.route('/favorites/user/<int:user_id>', methods=['GET'])
+def get_user_favorites(user_id):
+    favorites = Favorites.get_favorites(user_id)
+    return jsonify(favorites), 200
+
+@app.route('/favorites/<int:favorite_id>', methods=['DELETE'])
+def delete_favorite(favorite_id):
+    success = Favorites.delete_favorites(favorite_id)
+    if success:
+        return jsonify({"msg": "Favorito eliminado"}), 200
+    else:
+        return jsonify({"error": "No se pudo eliminar el favorito"}), 404
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
