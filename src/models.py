@@ -186,6 +186,37 @@ class Item(Base):
         except SQLAlchemyError:
             db.session.rollback()
             return False, None
+    
+    @staticmethod
+    def delete_item(id: int):
+        try:
+            item = db.session.get(Item, id)
+            if item is None:
+                return False
+            db.session.delete(item)
+            db.session.commit()
+            return True
+        except SQLAlchemyError:
+            db.session.rollback()
+            return False
+    
+    @staticmethod
+    def update_item(id: int, data: dict):
+        try:
+            item = db.session.get(Item, id)
+            if item is None:
+                return False, None
+            # Actualizar los campos del item
+            item.type_item = data.get("type_item", item.type_item)
+            item.prop_id = data.get("prop_id", item.prop_id)
+            item.description = data.get("description", item.description)
+            item.uid = data.get("uid", item.uid)
+            item.version = data.get("version", item.version)
+            db.session.commit()
+            return True, item.serialize()
+        except (KeyError, SQLAlchemyError)as e:
+            db.session.rollback()
+            return False, {"error": str(e)}
 
 # Properties almacena las propiedades de cada elemento, independientemente de su tipo.
 class Properties(Base):
@@ -261,6 +292,45 @@ class Properties(Base):
         except SQLAlchemyError:
             db.session.rollback()
             return False, None
+    
+    @staticmethod
+    def delete_propertie(id: int):
+        try:
+            propertie = db.session.get(Properties, id)
+            if propertie is None:
+                return False
+            db.session.delete(propertie)
+            db.session.commit()
+            return True
+        except SQLAlchemyError:
+            db.session.rollback()
+            return False
+    
+    @staticmethod
+    def update_propertie(id: int, data: dict):
+        try:
+            propertie = db.session.get(Properties, id)
+            if propertie is None:
+                return False, None
+            # Actualizar los campos de la propiedad
+            propertie.propertie_id = data.get("propertie_id", propertie.propertie_id)
+            propertie.created = data.get("created", propertie.created)
+            propertie.edited = data.get("edited", propertie.edited)
+            propertie.propertie_1 = data.get("propertie_1", propertie.propertie_1)
+            propertie.propertie_2 = data.get("propertie_2", propertie.propertie_2)
+            propertie.propertie_3 = data.get("propertie_3", propertie.propertie_3)
+            propertie.propertie_4 = data.get("propertie_4", propertie.propertie_4)
+            propertie.propertie_5 = data.get("propertie_5", propertie.propertie_5)
+            propertie.propertie_6 = data.get("propertie_6", propertie.propertie_6)
+            propertie.propertie_7 = data.get("propertie_7", propertie.propertie_7)
+            propertie.propertie_8 = data.get("propertie_8", propertie.propertie_8)
+            propertie.propertie_9 = data.get("propertie_9", propertie.propertie_9)
+            propertie.url = data.get("url", propertie.url)
+            db.session.commit()
+            return True, propertie.serialize()
+        except (KeyError, SQLAlchemyError)as e:
+            db.session.rollback()
+            return False, {"error": str(e)}
 
 try:
     render_er(Base, 'diagram.png')

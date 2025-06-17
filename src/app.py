@@ -146,6 +146,67 @@ def get_item_by_type_and_uid(type_item, uid):
     }
     return jsonify(response), 200
 
+@app.route('/items/<type_item>/<uid>', methods=['DELETE'])
+def delete_item(type_item, uid):
+    # Buscar el item por tipo y uid
+    item = db.session.query(Item).filter_by(type_item=type_item, uid=uid).first()
+    if not item:
+        return jsonify({"done": False, "message": "Item not found"}), 404
+
+    # Eliminar las properties asociadas
+    prop = db.session.query(Properties).filter_by(propertie_id=item.prop_id).first()
+    if prop:
+        db.session.delete(prop)
+
+    # Eliminar el item
+    db.session.delete(item)
+    db.session.commit()
+
+    return jsonify({"done": True, "message": "Item deleted successfully"}), 200
+
+@app.route('/items/<type_item>/<uid>', methods=['PUT'])
+def update_item(type_item, uid):
+    data = request.get_json()
+    if not data or "description" not in data or "properties" not in data:
+        return jsonify({"done": False, "message": "Invalid input"}), 400
+
+    # Buscar el item por tipo y uid
+    item = db.session.query(Item).filter_by(type_item=type_item, uid=uid).first()
+    if not item:
+        return jsonify({"done": False, "message": "Item not found"}), 404
+
+    # Actualizar el item
+    item.description = data["description"]
+    item.version += 1
+    db.session.commit()
+    # Actualizar las properties asociadas
+    prop = db.session.query(Properties).filter_by(propertie_id=item.prop_id).first()
+    if not prop or "properties" not in data:
+        return jsonify({"done": False, "message": "Properties not found"}), 404
+    # Validar que las propiedades a cambiar existan en el modelo Properties
+    valid_keys = {
+        "created", "edited", "url",
+        "propertie_1", "propertie_2", "propertie_3", "propertie_4", "propertie_5",
+        "propertie_6", "propertie_7", "propertie_8", "propertie_9"
+    }
+    for key in data["properties"].keys():
+        if key not in valid_keys:
+            return jsonify({"done": False, "message": f"La propiedad '{key}' no existe en Properties"}), 400
+    prop.created = data["properties"].get("created", prop.created)
+    prop.edited = data["properties"].get("edited", prop.edited)
+    prop.url = data["properties"].get("url", prop.url)
+    prop.propertie_1 = data["properties"].get("propertie_1", prop.propertie_1)
+    prop.propertie_2 = data["properties"].get("propertie_2", prop.propertie_2)
+    prop.propertie_3 = data["properties"].get("propertie_3", prop.propertie_3)
+    prop.propertie_4 = data["properties"].get("propertie_4", prop.propertie_4)
+    prop.propertie_5 = data["properties"].get("propertie_5", prop.propertie_5)
+    prop.propertie_6 = data["properties"].get("propertie_6", prop.propertie_6)
+    prop.propertie_7 = data["properties"].get("propertie_7", prop.propertie_7)
+    prop.propertie_8 = data["properties"].get("propertie_8", prop.propertie_8)
+    prop.propertie_9 = data["properties"].get("propertie_9", prop.propertie_9)
+    db.session.commit()
+    return jsonify({"done": True, "message": "Item updated successfully"}), 200
+
 @app.route('/user', methods=['POST'])
 def add_user():
     data = request.get_json()
